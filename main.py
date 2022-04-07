@@ -17,18 +17,19 @@ print("GO!")
 
 while 1:
     for msg in bus:
-        idToFilter = 0x000C0040
-        if msg.arbitration_id == idToFilter:
+        print(hex(msg.arbitration_id))
+        print(msg.data)
+        print()
         
-        #if data is int
-            upTime = int.from_bytes(msg.data[0:4], byteorder='little', signed=False)
-            TxFail = int.from_bytes(msg.data[4:5], byteorder='little',signed=False)
-            RxFail = int.from_bytes(msg.data[5:6], byteorder='little',signed=False)
-            print("UpTime: " + str(upTime) + "ms")
-            print("TxFail: " + str(TxFail))
-            print("RxFail: " + str(RxFail))
+#        idToFilter = 0x000C0040
+#        if msg.arbitration_id == idToFilter:
+        
+#            upTime = int.from_bytes(msg.data[0:4], byteorder='little', signed=False)
+#            TxFail = int.from_bytes(msg.data[4:5], byteorder='little',signed=False)
+#            RxFail = int.from_bytes(msg.data[5:6], byteorder='little',signed=False)
+#            print("UpTime: " + str(upTime) + "ms")
+#            print("TxFail: " + str(TxFail))
+#            print("RxFail: " + str(RxFail))
 #if data is float
         #dane = struct.unpack('f', msg.data[0:4])
         #print("Dane: " + str(dane[0]))
-
-            print()
