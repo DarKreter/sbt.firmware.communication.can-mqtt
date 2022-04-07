@@ -3,12 +3,12 @@
 #Based on what Kacper Chmielewski created in pwrsbt-python-kls/main.py
 #To init CAN use: sudo ip link set can0 up type can bitrate 1000000
 import struct
-import can
+import myCAN
 from can.interface import Bus
 
-can.rc['interface'] = 'socketcan_native'
-can.rc['channel'] = 'can0'
-can.rc['bitrate'] = 250000
+myCAN.rc['interface'] = 'socketcan_native'
+myCAN.rc['channel'] = 'can0'
+myCAN.rc['bitrate'] = 250000
 
 bus = Bus()
 
