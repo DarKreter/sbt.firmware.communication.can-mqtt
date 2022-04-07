@@ -1,14 +1,17 @@
 #!/usr/bin/python3
 import paho.mqtt.client as paho
 
-def on_connect(client, userdata, flags, rc):
-    print("Connected to MQTT broker with result code " + str(rc))
+class MQTT:
+    @staticmethod
+    def on_connect(client, userdata, flags, rc):
+        print("Connected to MQTT broker with result code " + str(rc))
+    
+    def __init__(self, server_host, server_port) -> None:
+        self.mqtt_client = paho.Client()
+        self.mqtt_client.on_connect = staticmethod(self.on_connect)
+        self.mqtt_client.connect(server_host, server_port)
 
-mqtt_server_host = "pwraerospace.edu.pl"
-mqtt_server_port = 1883
-
-my_mqtt_client = paho.Client()
-my_mqtt_client.on_connect = on_connect
-my_mqtt_client.connect(mqtt_server_host, mqtt_server_port)
-
-my_mqtt_client.publish("test/a", 12)
+    def Publish(self, threads, value):
+        mqtt_thread = "/".join(threads)
+        
+        self.mqtt_client.publish(mqtt_thread, value)
