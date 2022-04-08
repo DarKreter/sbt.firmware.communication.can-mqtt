@@ -25,7 +25,6 @@ canDecoder = CanDecoder(args.dbc_file)
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
 
-
 print("GO!")
 
 while 1:
@@ -41,13 +40,3 @@ while 1:
         for signal in frame:
             myMQTT.Publish([sourceIDname, paramIDname, signal], frame[signal])
             print("{}/{}/{} = {}".format(sourceIDname, paramIDname, signal, frame[signal]))
-
-
-
-
-
-
-
-
-
-
