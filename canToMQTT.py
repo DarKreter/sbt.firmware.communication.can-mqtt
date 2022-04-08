@@ -24,6 +24,7 @@ canDecoder = CanDecoder(args.dbc_file)
 
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
+myMQTT.initConnection()
 
 print("GO!")
 
@@ -33,10 +34,10 @@ while 1:
         frame = canDecoder.decode_mess(msg.arbitration_id, msg.data)
 
         # Get SBT IDs
-        sourceIDname = sourceIDtoName[canDecoder.get_sourceID()]
-        paramIDname = paramIDtoName[canDecoder.get_paramID()]
+        sourceIDname = sourceIDtoName[canDecoder.get_sourceID(msg.arbitration_id)]
+        paramIDname = paramIDtoName[canDecoder.get_paramID(msg.arbitration_id)]
 
         # Print all signals from frame to MQTT
         for signal in frame:
-            myMQTT.Publish([sourceIDname, paramIDname, signal], frame[signal])
+            myMQTT.publish([sourceIDname, paramIDname, signal], frame[signal])
             print("{}/{}/{} = {}".format(sourceIDname, paramIDname, signal, frame[signal]))
