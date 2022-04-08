@@ -1,15 +1,19 @@
 import can
-import can.interfaces.vector
 from can.interface import Bus
 import cantools
+from CanID import SbtCan
 
-print("AAA")
 
-# arbitrationID = 0xc0040
-# payload = bytearray(b'\xc8y\t\x00\x00\x00\x00\x00')
+dbcPath = '../miscellaneous.can-ids/SBT.dbc'
 
-# db = cantools.database.load_file('../miscellaneous.can-ids/SBT.dbc')
+canDecoder = SbtCan(dbcPath)
+frame = canDecoder.decode_mess(0xc0040, bytearray(b'\xc8y\t\x00\x00\x00\x00\x00'))
 
-# print(db)
+print(canDecoder.get_paramID())
+print(canDecoder.get_sourceID())
+print(canDecoder.get_groupID())
+print(canDecoder.get_priority())
 
-# print(db.decode_message(arbitrationID,payload))
+
+for signal in frame:
+    print("{} = {}".format(signal, frame[signal]))
