@@ -19,7 +19,7 @@ class MQTT:
 
 
     def initConnection(self):
-        self.mqtt_client = paho.Client("SBT")
+        self.mqtt_client = paho.Client()
 
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.on_message = self.on_message

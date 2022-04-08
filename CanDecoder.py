@@ -39,6 +39,14 @@ class CanDecoder:
 
         return arbitrationID
 
+    def get_CANpayload(self, paramIDname, signalName, signalValue):
 
-
-
+        mess = self.db.get_message_by_name(paramIDname)
+        signals = dict()
+        for signal in mess.signals:
+            if signalName == signal.name:
+                signals[signal.name] = float(signalValue)
+            else:
+                signals[signal.name] = 0
+            
+        return mess.encode(signals)
