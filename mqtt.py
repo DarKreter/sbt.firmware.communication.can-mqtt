@@ -12,13 +12,13 @@ class MQTT:
         self.__receive_callback = receive_callback
 
     def initConnection(self):
-        self.mqtt_client = paho.Client()
+        self.mqtt_client = paho.Client("SBT")
 
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.on_message = self.on_message
 
         self.mqtt_client.connect(self.server_host, self.server_port)
-        self.mqtt_client.loop_start()
+        # self.mqtt_client.loop_start()
 
     def publish(self, threads, value):
         mqtt_thread = "/".join(threads)

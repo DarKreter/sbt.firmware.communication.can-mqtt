@@ -25,7 +25,7 @@ print("GO!")
 while 1:
     for msg in bus:
         # Decode frame
-        frame = canDecoder.decode_mess(msg.arbitration_id, msg.data)
+        frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
 
         # Get SBT IDs
         sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(msg.arbitration_id)]

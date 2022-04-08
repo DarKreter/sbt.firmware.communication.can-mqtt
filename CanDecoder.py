@@ -9,7 +9,7 @@ class CanDecoder:
         pass
     
     def decode_payload(self, id, payload):
-        self.data = self.db.decode_message(self.get_paramID(id), payload)
+        self.data = self.db.decode_message(self.decode_paramID(id), payload)
         return self.data
 
     def decode_paramID(self, arbitrationID):

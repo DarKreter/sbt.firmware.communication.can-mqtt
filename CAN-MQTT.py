@@ -29,7 +29,6 @@ def callback(topic, threadValue):
     print()
     bus.send( can.Message(arbitration_id=extID, data=canPayload, is_extended_id=True ))
 
-
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
 myMQTT.subscribe("#", callback)
@@ -38,5 +37,16 @@ myMQTT.initConnection()
 print("GO!")
 
 while 1:
-    time.sleep(1)
-    pass
+    for msg in bus:
+        # Decode frame
+        frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
+
+        # Get SBT IDs
+        sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(msg.arbitration_id)]
+        paramIDname = paramIDtoName[canDecoder.decode_paramID(msg.arbitration_id)]
+
+        # Print all signals from frame to MQTT
+        for signal in frame:
+            myMQTT.publish([sourceIDname, paramIDname, signal], frame[signal])
+            print("New message from CAN!")
+            print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname, paramIDname, signal, frame[signal]))
