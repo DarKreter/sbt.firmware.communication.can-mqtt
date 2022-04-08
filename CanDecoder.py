@@ -2,7 +2,7 @@ import can
 from can.interface import Bus
 import cantools
 
-class SbtCan:
+class CanDecoder:
     def __init__(self, dbcPath) -> None:
         self.db = cantools.database.load_file(dbcPath)
         self.arbitrationID = 0
