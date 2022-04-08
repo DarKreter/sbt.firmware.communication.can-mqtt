@@ -10,9 +10,8 @@ from mqtt import MQTT
 parser = argparse.ArgumentParser()
 parser.add_argument("--can_socket", type=str, help="can0 or vcan0")
 parser.add_argument("--mqtt_server", type=str, help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
+parser.add_argument("--dbc_file", type=str, help="path to dbc file")
 args = parser.parse_args()
-
-dbcPath = '../miscellaneous.can-ids/SBT.dbc'
 
 # Init can socket
 can.rc['interface'] = 'socketcan'
@@ -21,7 +20,7 @@ can.rc['bitrate'] = 250000
 bus = Bus()
 
 # config can decoder
-canDecoder = CanDecoder(dbcPath)
+canDecoder = CanDecoder(args.dbc_file)
 
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
