@@ -27,12 +27,15 @@ while 1:
         # Decode frame
         frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
 
+        print("New message from CAN!")
         # Get SBT IDs
         sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(msg.arbitration_id)]
         paramIDname = paramIDtoName[canDecoder.decode_paramID(msg.arbitration_id)]
-
+        
         # Print all signals from frame to MQTT
         for signal in frame:
             myMQTT.publish([sourceIDname, paramIDname, signal], frame[signal])
-            print("New message from CAN!")
             print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname, paramIDname, signal, frame[signal]))
+
+        print()
+

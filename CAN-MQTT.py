@@ -32,6 +32,7 @@ def callback(topic, threadValue):
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
 myMQTT.subscribe("#", callback)
+# subscribe([("my/topic", 0), ("another/topic", 2)])
 myMQTT.initConnection()
 
 print("GO!")
@@ -45,8 +46,9 @@ while 1:
         sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(msg.arbitration_id)]
         paramIDname = paramIDtoName[canDecoder.decode_paramID(msg.arbitration_id)]
 
+        print("New message from CAN!")
         # Print all signals from frame to MQTT
         for signal in frame:
             myMQTT.publish([sourceIDname, paramIDname, signal], frame[signal])
-            print("New message from CAN!")
             print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname, paramIDname, signal, frame[signal]))
+        print()
