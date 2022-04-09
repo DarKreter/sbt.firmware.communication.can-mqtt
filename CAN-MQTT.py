@@ -54,23 +54,26 @@ def idle():
 def canReceiver():
     while 1:
         for msg in bus:
-            # Decode frame
-            frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
+            try:
+                # Decode frame
+                frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
 
-            # Get SBT IDs
-            sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
-                msg.arbitration_id)]
-            paramIDname = paramIDtoName[canDecoder.decode_paramID(
-                msg.arbitration_id)]
+                # Get SBT IDs
+                sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
+                    msg.arbitration_id)]
+                paramIDname = paramIDtoName[canDecoder.decode_paramID(
+                    msg.arbitration_id)]
 
-            print("New message from CAN!")
-            # Print all signals from frame to MQTT
-            for signal in frame:
-                myMQTT.publish(
-                    [sourceIDname, paramIDname, signal], frame[signal])
-                print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname,
-                                                              paramIDname, signal, frame[signal]))
-            print()
+                print("New message from CAN!")
+                # Print all signals from frame to MQTT
+                for signal in frame:
+                    myMQTT.publish(
+                        [sourceIDname, paramIDname, signal], frame[signal])
+                    print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname,
+                                                                  paramIDname, signal, frame[signal]))
+                print()
+            except:
+                print("Unknown frame: {}#{}", msg.arbitration_id, msg.data)
 
 
 print("GO!")
