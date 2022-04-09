@@ -1,3 +1,4 @@
+import re
 from __headers__ import *
 
 class Direction(Enum):
@@ -7,10 +8,11 @@ class Direction(Enum):
 
 # Call parameters
 parser = argparse.ArgumentParser()
-parser.add_argument("--can_socket", type=str, help="can0 or vcan0")
-parser.add_argument("--mqtt_server", type=str,
+parser.add_argument("--can_socket", type=str, help="can0 or vcan0", required=True)
+parser.add_argument("--mqtt_server", type=str, required=True,
                     help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
-parser.add_argument("--dbc_file", type=str, help="path to dbc file")
+parser.add_argument("--dbc_file", type=str, help="path to dbc file", required=True)
+parser.add_argument("--thread", type=str, help="Thread in SBT/ to subscribe and to send", required=True)
 parser.add_argument("--direction", type=Direction, choices=list(Direction),
                     help="direction of communication: \"can2mqtt\", \"mqtt2can\" or \"bidirectional\"")
 args = parser.parse_args()
@@ -44,6 +46,8 @@ def callback(topic, threadValue):
     except:
         print("Error processing message: {}={}".format(topic, threadValue))
 
+print("SBT/{}/#".format(args.thread))
+
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
 if args.direction == Direction.bidirectional or args.direction == Direction.mqtt2can:
@@ -75,8 +79,8 @@ def canReceiver():
                 # Print all signals from frame to MQTT
                 for signal in frame:
                     myMQTT.publish(
-                        [sourceIDname, paramIDname, signal], frame[signal])
-                    print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname,
+                        ["SBT", args.thread, sourceIDname, paramIDname, signal], frame[signal])
+                    print("Sending to MQTT: SBT/{}/{}/{}/{} = {}".format(args.thread, sourceIDname,
                                                                   paramIDname, signal, frame[signal]))
                 print()
             except:
