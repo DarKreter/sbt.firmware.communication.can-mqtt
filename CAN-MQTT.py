@@ -1,18 +1,23 @@
 import re
 from __headers__ import *
 
+
 class Direction(Enum):
     can2mqtt = 'can2mqtt'
     mqtt2can = 'mqtt2can'
     bidirectional = 'bidirectional'
 
+
 # Call parameters
 parser = argparse.ArgumentParser()
-parser.add_argument("--can_socket", type=str, help="can0 or vcan0", required=True)
+parser.add_argument("--can_socket", type=str,
+                    help="can0 or vcan0", required=True)
 parser.add_argument("--mqtt_server", type=str, required=True,
                     help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
-parser.add_argument("--dbc_file", type=str, help="path to dbc file", required=True)
-parser.add_argument("--thread", type=str, help="Thread in SBT/ to subscribe and to send", required=True)
+parser.add_argument("--dbc_file", type=str,
+                    help="path to dbc file", required=True)
+parser.add_argument("--thread", type=str,
+                    help="Thread in SBT/ to subscribe and to send", required=True)
 parser.add_argument("--direction", type=Direction, choices=list(Direction), default=Direction.bidirectional,
                     help="direction of communication: \"can2mqtt\", \"mqtt2can\" or \"bidirectional\"")
 args = parser.parse_args()
@@ -42,7 +47,7 @@ def callback(topic, threadValue):
         print("Sending to CAN: {} = {}".format(topic, threadValue))
         print()
         bus.send(can.Message(arbitration_id=extID,
-                data=canPayload, is_extended_id=True))
+                             data=canPayload, is_extended_id=True))
     except:
         print("Error processing message: {}={}".format(topic, threadValue))
 
@@ -65,14 +70,31 @@ def canReceiver():
     while 1:
         for msg in bus:
             try:
-                # Decode frame
-                frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
+                # Exception with KLS
+                if msg.arbitration_id == 0x0CF11E05 or msg.arbitration_id == 0x0CF11F05:
+                    KLS_dbc_path = args.dbc_file[:args.dbc_file.rindex(
+                        '/')+1] + "KLS.dbc"
+                    db = cantools.database.load_file(KLS_dbc_path)
+                    data = db.decode_message(msg.arbitration_id, msg.data)
 
-                # Get SBT IDs
-                sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
-                    msg.arbitration_id)]
-                paramIDname = paramIDtoName[canDecoder.decode_paramID(
-                    msg.arbitration_id)]
+                    sourceIDname = "KLS"
+
+                    if msg.arbitration_id == 0x0CF11E05:
+                        paramIDname = "KLS_DATA_1"
+                    else:
+                        paramIDname = "KLS_DATA_2"
+
+                # Standard SBT CAN ID
+                else:
+                    # Decode frame
+                    frame = canDecoder.decode_payload(
+                        msg.arbitration_id, msg.data)
+
+                    # Get SBT IDs
+                    sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
+                        msg.arbitration_id)]
+                    paramIDname = paramIDtoName[canDecoder.decode_paramID(
+                        msg.arbitration_id)]
 
                 print("New message from CAN!")
                 # Print all signals from frame to MQTT
@@ -80,10 +102,12 @@ def canReceiver():
                     myMQTT.publish(
                         ["SBT", args.thread, sourceIDname, paramIDname, signal], frame[signal])
                     print("Sending to MQTT: SBT/{}/{}/{}/{} = {}".format(args.thread, sourceIDname,
-                                                                  paramIDname, signal, frame[signal]))
+                                                                         paramIDname, signal, frame[signal]))
                 print()
+
             except:
-                print("Unknown frame: {}#{}".format(msg.arbitration_id, msg.data))
+                print("Unknown frame: {}#{}".format(
+                    msg.arbitration_id, msg.data))
 
 
 print("GO!")
