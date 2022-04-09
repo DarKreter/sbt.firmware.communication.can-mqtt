@@ -72,10 +72,11 @@ def canReceiver():
             try:
                 # Exception with KLS
                 if msg.arbitration_id == 0x0CF11E05 or msg.arbitration_id == 0x0CF11F05:
+                    
                     KLS_dbc_path = args.dbc_file[:args.dbc_file.rindex(
                         '/')+1] + "KLS.dbc"
                     db = cantools.database.load_file(KLS_dbc_path)
-                    data = db.decode_message(msg.arbitration_id, msg.data)
+                    frame = db.decode_message(msg.arbitration_id, msg.data)
 
                     sourceIDname = "KLS"
 
@@ -87,14 +88,14 @@ def canReceiver():
                 # Standard SBT CAN ID
                 else:
                     # Decode frame
-                    frame = canDecoder.decode_payload(
-                        msg.arbitration_id, msg.data)
+                    frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
 
                     # Get SBT IDs
                     sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
                         msg.arbitration_id)]
                     paramIDname = paramIDtoName[canDecoder.decode_paramID(
                         msg.arbitration_id)]
+
 
                 print("New message from CAN!")
                 # Print all signals from frame to MQTT
@@ -105,9 +106,10 @@ def canReceiver():
                                                                          paramIDname, signal, frame[signal]))
                 print()
 
-            except:
-                print("Unknown frame: {}#{}".format(
-                    msg.arbitration_id, msg.data))
+            except Exception as e:
+                print("Unknown frame: {}#{}".format(msg.arbitration_id, msg.data))
+                print("Error: {}".format(e))
+                print()
 
 
 print("GO!")
