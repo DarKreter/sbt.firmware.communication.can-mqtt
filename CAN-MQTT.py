@@ -1,13 +1,18 @@
 from __headers__ import *
 
+class Direction(Enum):
+    can2mqtt = 'can2mqtt'
+    mqtt2can = 'mqtt2can'
+    bidirectional = 'bidirectional'
+
 # Call parameters
 parser = argparse.ArgumentParser()
 parser.add_argument("--can_socket", type=str, help="can0 or vcan0")
 parser.add_argument("--mqtt_server", type=str,
                     help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
 parser.add_argument("--dbc_file", type=str, help="path to dbc file")
-parser.add_argument("--direction", type=str,
-                    help="direction of communication: \"can2mqtt\", \"mqtt2can\" or \"bidirectional\"", default="bidirectional")
+parser.add_argument("--direction", type=Direction, choices=list(Direction),
+                    help="direction of communication: \"can2mqtt\", \"mqtt2can\" or \"bidirectional\"")
 args = parser.parse_args()
 
 # Init can socket
@@ -39,7 +44,7 @@ def callback(topic, threadValue):
 
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
-if args.direction == "bidirectional" or args.direction == "mqtt2can":
+if args.direction == Direction.bidirectional or args.direction == Direction.mqtt2can:
     myMQTT.subscribe("#", callback)
 # subscribe([("my/topic", 0), ("another/topic", 2)])
 myMQTT.initConnection()
@@ -75,7 +80,7 @@ def canReceiver():
 
 print("GO!")
 
-if args.direction == "can2mqtt" or args.direction == "bidirectional":
+if args.direction == Direction.can2mqtt or args.direction == Direction.bidirectional:
     canReceiver()
 else:
     idle()
