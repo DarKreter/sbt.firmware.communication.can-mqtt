@@ -27,20 +27,22 @@ canDecoder = CanDecoder(args.dbc_file)
 
 # The callback for when a PUBLISH message is received from the server.
 def callback(topic, threadValue):
-    keys = topic.split("/")
+    try:
+        keys = topic.split("/")
 
-    extID = canDecoder.encode_arbitrationID(
-        keys[len(keys) - 3], keys[len(keys) - 2])
+        extID = canDecoder.encode_arbitrationID(
+            keys[len(keys) - 3], keys[len(keys) - 2])
 
-    canPayload = canDecoder.encode_payload(
-        keys[len(keys) - 2], keys[len(keys) - 1], threadValue)
+        canPayload = canDecoder.encode_payload(
+            keys[len(keys) - 2], keys[len(keys) - 1], threadValue)
 
-    print("New message from MQTT!")
-    print("Sending to CAN: {} = {}".format(topic, threadValue))
-    print()
-    bus.send(can.Message(arbitration_id=extID,
-             data=canPayload, is_extended_id=True))
-
+        print("New message from MQTT!")
+        print("Sending to CAN: {} = {}".format(topic, threadValue))
+        print()
+        bus.send(can.Message(arbitration_id=extID,
+                data=canPayload, is_extended_id=True))
+    except:
+        print("Error processing message: {}={}".format(topic, threadValue))
 
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)

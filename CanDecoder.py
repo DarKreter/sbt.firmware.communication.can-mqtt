@@ -42,10 +42,16 @@ class CanDecoder:
 
         mess = self.db.get_message_by_name(paramIDname)
         signals = dict()
+
+        x = False
         for signal in mess.signals:
             if signalName == signal.name:
                 signals[signal.name] = float(signalValue)
+                x = True
             else:
                 signals[signal.name] = 0
+
+        if x == False:
+            raise
 
         return mess.encode(signals)
