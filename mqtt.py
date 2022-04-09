@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 import paho.mqtt.client as paho
 
-class MQTT:  
+
+class MQTT:
     def __init__(self, server_host, server_port) -> None:
         self.server_host = server_host
         self.server_port = server_port
         self.__subscribePattern = ""
-        
+
     def subscribe(self, subscribePattern, receive_callback):
         self.__subscribePattern = subscribePattern
         self.__receive_callback = receive_callback
@@ -22,14 +23,15 @@ class MQTT:
 
     def publish(self, threads, value):
         mqtt_thread = "/".join(threads)
-        
+
         self.mqtt_client.publish(mqtt_thread, value)
 
     def on_connect(self, client, userdata, flags, rc, mqttv5_data: None):
         print("Connected with result code {}".format(str(rc)))
 
         if self.__subscribePattern != "":
-            self.mqtt_client.subscribe((self.__subscribePattern, paho.SubscribeOptions(noLocal=True)))
+            self.mqtt_client.subscribe(
+                (self.__subscribePattern, paho.SubscribeOptions(noLocal=True)))
             # subscribe(self.__subscribePattern)
 
     # The callback for when a PUBLISH message is received from the server.

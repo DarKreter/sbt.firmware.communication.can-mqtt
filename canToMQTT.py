@@ -3,7 +3,8 @@ from __headers__ import *
 # Call parameters
 parser = argparse.ArgumentParser()
 parser.add_argument("--can_socket", type=str, help="can0 or vcan0")
-parser.add_argument("--mqtt_server", type=str, help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
+parser.add_argument("--mqtt_server", type=str,
+                    help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
 parser.add_argument("--dbc_file", type=str, help="path to dbc file")
 args = parser.parse_args()
 
@@ -29,13 +30,15 @@ while 1:
 
         print("New message from CAN!")
         # Get SBT IDs
-        sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(msg.arbitration_id)]
-        paramIDname = paramIDtoName[canDecoder.decode_paramID(msg.arbitration_id)]
-        
+        sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
+            msg.arbitration_id)]
+        paramIDname = paramIDtoName[canDecoder.decode_paramID(
+            msg.arbitration_id)]
+
         # Print all signals from frame to MQTT
         for signal in frame:
             myMQTT.publish([sourceIDname, paramIDname, signal], frame[signal])
-            print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname, paramIDname, signal, frame[signal]))
+            print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname,
+                  paramIDname, signal, frame[signal]))
 
         print()
-
