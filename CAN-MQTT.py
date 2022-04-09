@@ -78,7 +78,7 @@ def canReceiver():
                                                                   paramIDname, signal, frame[signal]))
                 print()
             except:
-                print("Unknown frame: {}#{}", msg.arbitration_id, msg.data)
+                print("Unknown frame: {}#{}".format(msg.arbitration_id, msg.data))
 
 
 print("GO!")
