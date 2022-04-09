@@ -2,11 +2,11 @@
 
 Example usage:
 ```bash
-python3 CAN-MQTT.py --can_socket vcan0 --mqtt_server pwraerospace.edu.pl --dbc_file ../miscellaneous.can-ids/SBT.dbc --thread 4G
+python3 CanMQTT.py --can_socket vcan0 --mqtt_server pwraerospace.edu.pl --dbc_file ../miscellaneous.can-ids/SBT.dbc --thread 4G
 ```
 To see arguments types:
 ```bash
-python3 CAN-MQTT.py --help
+python3 CanMQTT.py --help
 ```
 
 Requirements:
