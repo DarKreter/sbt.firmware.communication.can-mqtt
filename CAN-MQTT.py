@@ -13,7 +13,7 @@ parser.add_argument("--mqtt_server", type=str, required=True,
                     help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
 parser.add_argument("--dbc_file", type=str, help="path to dbc file", required=True)
 parser.add_argument("--thread", type=str, help="Thread in SBT/ to subscribe and to send", required=True)
-parser.add_argument("--direction", type=Direction, choices=list(Direction),
+parser.add_argument("--direction", type=Direction, choices=list(Direction), default=Direction.bidirectional,
                     help="direction of communication: \"can2mqtt\", \"mqtt2can\" or \"bidirectional\"")
 args = parser.parse_args()
 
@@ -46,12 +46,11 @@ def callback(topic, threadValue):
     except:
         print("Error processing message: {}={}".format(topic, threadValue))
 
-print("SBT/{}/#".format(args.thread))
 
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
 if args.direction == Direction.bidirectional or args.direction == Direction.mqtt2can:
-    myMQTT.subscribe("#", callback)
+    myMQTT.subscribe("SBT/{}/#".format(args.thread), callback)
 # subscribe([("my/topic", 0), ("another/topic", 2)])
 myMQTT.initConnection()
 
