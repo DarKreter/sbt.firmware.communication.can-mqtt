@@ -6,6 +6,8 @@ parser.add_argument("--can_socket", type=str, help="can0 or vcan0")
 parser.add_argument("--mqtt_server", type=str,
                     help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
 parser.add_argument("--dbc_file", type=str, help="path to dbc file")
+parser.add_argument("--direction", type=str,
+                    help="direction of communication: \"can2mqtt\", \"mqtt2can\" or \"bidirectional\"", default="bidirectional")
 args = parser.parse_args()
 
 # Init can socket
@@ -17,9 +19,8 @@ bus = Bus()
 # config can decoder
 canDecoder = CanDecoder(args.dbc_file)
 
+
 # The callback for when a PUBLISH message is received from the server.
-
-
 def callback(topic, threadValue):
     keys = topic.split("/")
 
@@ -38,27 +39,43 @@ def callback(topic, threadValue):
 
 # config MQTT
 myMQTT = MQTT(args.mqtt_server, 1883)
-myMQTT.subscribe("#", callback)
+if args.direction == "bidirectional" or args.direction == "mqtt2can":
+    myMQTT.subscribe("#", callback)
 # subscribe([("my/topic", 0), ("another/topic", 2)])
 myMQTT.initConnection()
 
+
+def idle():
+    while 1:
+        time.sleep(1)
+        pass
+
+
+def canReceiver():
+    while 1:
+        for msg in bus:
+            # Decode frame
+            frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
+
+            # Get SBT IDs
+            sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
+                msg.arbitration_id)]
+            paramIDname = paramIDtoName[canDecoder.decode_paramID(
+                msg.arbitration_id)]
+
+            print("New message from CAN!")
+            # Print all signals from frame to MQTT
+            for signal in frame:
+                myMQTT.publish(
+                    [sourceIDname, paramIDname, signal], frame[signal])
+                print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname,
+                                                              paramIDname, signal, frame[signal]))
+            print()
+
+
 print("GO!")
 
-while 1:
-    for msg in bus:
-        # Decode frame
-        frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
-
-        # Get SBT IDs
-        sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
-            msg.arbitration_id)]
-        paramIDname = paramIDtoName[canDecoder.decode_paramID(
-            msg.arbitration_id)]
-
-        print("New message from CAN!")
-        # Print all signals from frame to MQTT
-        for signal in frame:
-            myMQTT.publish([sourceIDname, paramIDname, signal], frame[signal])
-            print("Sending to MQTT: {}/{}/{} = {}".format(sourceIDname,
-                  paramIDname, signal, frame[signal]))
-        print()
+if args.direction == "can2mqtt" or args.direction == "bidirectional":
+    canReceiver()
+else:
+    idle()
