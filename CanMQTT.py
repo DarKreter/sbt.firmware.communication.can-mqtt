@@ -1,4 +1,5 @@
 from __headers__ import *
+from canReceiver import canReceiver, idle
 
 
 class Direction(Enum):
