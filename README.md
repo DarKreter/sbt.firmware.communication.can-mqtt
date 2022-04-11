@@ -14,6 +14,7 @@ Requirements:
 sudo apt update
 sudo apt install python3 python3-pip
 pip3 install --requirement requirements.txt
+git submodule update --init
 ```
 
 With standard can to init just type:
