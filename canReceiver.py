@@ -11,21 +11,10 @@ def canReceiver(bus, args, canDecoder, myMQTT):
     while 1:
         for msg in bus:
             try:
-                # Exception with KLS
-                if msg.arbitration_id == 0x0CF11E05 or msg.arbitration_id == 0x0CF11F05:
+                # Decode frame
+                frame = canDecoder.decode_payload(msg.arbitration_id, msg.data)
 
-                    KLS_dbc_path = args.dbc_file[:args.dbc_file.rindex(
-                        '/')+1] + "KLS.dbc"
-                    db = cantools.database.load_file(KLS_dbc_path)
-                    frame = db.decode_message(msg.arbitration_id, msg.data)
-
-                # Standard SBT CAN ID
-                else:
-                    # Decode frame
-                    frame = canDecoder.decode_payload(
-                        msg.arbitration_id, msg.data)
-
-                    # Get SBT IDs
+                # Get SBT IDs
                 sourceIDname = canDecoder.decode_sourceID_name(msg.arbitration_id)
                 paramIDname = canDecoder.decode_paramID_name(msg.arbitration_id)
 
