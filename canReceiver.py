@@ -19,13 +19,6 @@ def canReceiver(bus, args, canDecoder, myMQTT):
                     db = cantools.database.load_file(KLS_dbc_path)
                     frame = db.decode_message(msg.arbitration_id, msg.data)
 
-                    sourceIDname = "KLS"
-
-                    if msg.arbitration_id == 0x0CF11E05:
-                        paramIDname = "KLS_DATA_1"
-                    else:
-                        paramIDname = "KLS_DATA_2"
-
                 # Standard SBT CAN ID
                 else:
                     # Decode frame
@@ -33,10 +26,8 @@ def canReceiver(bus, args, canDecoder, myMQTT):
                         msg.arbitration_id, msg.data)
 
                     # Get SBT IDs
-                    sourceIDname = sourceIDtoName[canDecoder.decode_sourceID(
-                        msg.arbitration_id)]
-                    paramIDname = paramIDtoName[canDecoder.decode_paramID(
-                        msg.arbitration_id)]
+                sourceIDname = canDecoder.decode_sourceID_name(msg.arbitration_id)
+                paramIDname = canDecoder.decode_paramID_name(msg.arbitration_id)
 
                 print("New message from CAN!")
                 # Print all signals from frame to MQTT

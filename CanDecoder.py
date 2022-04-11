@@ -55,3 +55,18 @@ class CanDecoder:
             raise
 
         return mess.encode(signals)
+    
+
+    def decode_sourceID_name(self, arbitrationID):
+        if arbitrationID == 0x0CF11E05 or arbitrationID == 0x0CF11F05:
+            return "KLS"
+        else:
+            return sourceIDtoName[self.decode_sourceID(arbitrationID)]
+
+    def decode_paramID_name(self, arbitrationID):
+        if arbitrationID == 0x0CF11E05:
+            return "KLS_DATA_1"
+        elif arbitrationID == 0x0CF11F05:
+            return "KLS_DATA_2"
+        else:
+            return paramIDtoName[self.decode_paramID(arbitrationID)]
