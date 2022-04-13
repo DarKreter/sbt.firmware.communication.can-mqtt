@@ -14,8 +14,10 @@ parser.add_argument("--can_socket", type=str,
                     help="can0 or vcan0", required=True)
 parser.add_argument("--mqtt_server", type=str, required=True,
                     help="address of mqtt server ie. localhost or pwraerospace.edu.pl")
-parser.add_argument("--dbc_file", type=str,
-                    help="path to dbc file", required=True)
+parser.add_argument("--sbt_dbc", type=str,
+                    help="path to dbc file with SolarBoat IDs", required=True)
+parser.add_argument("--kls_dbc", type=str,
+                    help="path to dbc file with KLS frames", required=True)
 parser.add_argument("--thread", type=str,
                     help="Thread in SBT/ to subscribe and to send", required=True)
 parser.add_argument("--direction", type=Direction, choices=list(Direction), default=Direction.bidirectional,
@@ -29,7 +31,7 @@ can.rc['bitrate'] = 250000
 bus = Bus()
 
 # config can decoder
-canDecoder = CanDecoder(args.dbc_file)
+canDecoder = CanDecoder(args.sbt_dbc, args.kls_dbc)
 
 # The callback for when a PUBLISH message is received from the server.
 def callback(topic, threadValue):

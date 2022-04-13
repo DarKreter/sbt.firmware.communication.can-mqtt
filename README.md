@@ -2,7 +2,7 @@
 
 Example usage:
 ```bash
-python3 CanMQTT.py --can_socket vcan0 --mqtt_server pwraerospace.edu.pl --dbc_file ../miscellaneous.can-ids/SBT.dbc --thread 4G
+python3 CanMQTT.py --can_socket vcan0 --mqtt_server pwraerospace.edu.pl --sbt_dbc ../miscellaneous.can-ids/SBT.dbc --kls_dbc ../miscellaneous.can-ids/KLS.dbc --thread 4G
 ```
 To see arguments types:
 ```bash
