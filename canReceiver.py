@@ -15,7 +15,7 @@ def canReceiver(bus, args, canDecoder, myMQTT):
                 print("New message from CAN!")
                 # Print all signals from frame to MQTT
                 for signal in frame:
-                    signalValue = "{:.3f}".format(frame[signal])
+                    signalValue = "{:.8f}".format(frame[signal])
                     myMQTT.publish(
                         ["SBT", args.thread, sourceIDname, paramIDname, signal], signalValue)
                     print("Sending to MQTT: SBT/{}/{}/{}/{} = {}".format(args.thread, sourceIDname,
